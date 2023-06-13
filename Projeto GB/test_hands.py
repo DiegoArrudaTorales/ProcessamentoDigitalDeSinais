@@ -9,8 +9,9 @@ hand = mp.solutions.hands
 Hand = hand.Hands(max_num_hands=1)  # faz a detecção da mão dentro do vídeo
 
 mpDraw = mp.solutions.drawing_utils # desenha as ligações entre os pontos na mão
-contadorGeral = 0
-ultimosNumeros = [0,0,0] 
+contadorGeral = 10
+contadorGeralSenha = 0
+ultimosNumeros = [0,0,0,10] 
 senha=[0,0,0,0]
 senhacorreta=[1,2,3,4]
 
@@ -24,7 +25,7 @@ while True:
     pontos = []
     
 
-    def detectador(ultimaLeitura = 0, contadorGeral=0, posicaoSenha=0):
+    def detectador(ultimaLeitura = 0, contadorGeralSenha=0, posicaoSenha=0, contadorGeral=10):
         
         if handsPoints:
             for points in handsPoints:  # percorre os handsPoints
@@ -62,16 +63,25 @@ while True:
                     else:
                         contador=0                 
                         if ((pontos[2][1] - pontos[4][1]>60) and (pontos[5][1]<pontos[17][1]) and (pontos[5][1]<pontos[14][1])): # DETECTOU MÃO FECHADA E POLEGAR PARA CIMA = JOINHA
-                            print("JOINHA DETECTADO")
-                            cv2.putText(img,str('Joinha detectado'),(50,270),cv2.FONT_HERSHEY_SIMPLEX,2,(0,255,255),5)
+                            
+                            if senha == senhacorreta:
+                                 print("senha correta")
+                                 cv2.putText(img,str('Senha correta'),(50,270),cv2.FONT_HERSHEY_SIMPLEX,2,(0,255,255),5)
+                                 print("ACESSO LIBERADO")
+                                 cv2.putText(img,str('ACESSO LIBERADO'),(50,320),cv2.FONT_HERSHEY_SIMPLEX,2,(80, 200, 120),5)
+                            else:  
+                                print("JOINHA DETECTADO")
+                                cv2.putText(img,str('Joinha detectado'),(50,270),cv2.FONT_HERSHEY_SIMPLEX,2,(124, 252, 0),5)   
+            teste = (pontos[5][1]<pontos[17][1]) and (pontos[5][1]<pontos[14][1])
+            print(str(teste))   
             
-
+            contadorGeral+=1
             if contador == ultimaLeitura:
-                contadorGeral += 1        
+                contadorGeralSenha += 1        
             else:
-                contadorGeral=0
+                contadorGeralSenha=0
 
-            if contadorGeral>22:
+            if contadorGeralSenha>18:
                 print('Digito registrado') 
                 print('posicao senha:',posicaoSenha)
                 senha[posicaoSenha] = contador
@@ -80,14 +90,31 @@ while True:
                 if posicaoSenha<3:
                     posicaoSenha+= 1
                 else:
-                    posicaoSenha=0                    
+                    if senha != senhacorreta: #or ((pontos[5][1]<pontos[17][1]) and (pontos[5][1]<pontos[14][1]))==False):
+                        print('Reiniciando leitura')
+                        
+                        senha[0]=0
+                        senha[1]=0
+                        senha[2]=0
+                        senha[3]=0
+                    posicaoSenha=0
+                    contadorGeral=0
                 print('senha atual : ', str(senha))
-                contadorGeral=0
+                contadorGeralSenha=0
+            if contadorGeral<10 and senha==[0,0,0,0]: 
+                cv2.putText(img,str('Reiniciando leitura'),(50,270),cv2.FONT_HERSHEY_SIMPLEX,2,(0,255,255),5)
+            if contadorGeral>20 and senha==[1,2,3,4] and (pontos[2][1] - pontos[4][1]>60) and (pontos[5][1]<pontos[17][1]) and (pontos[5][1]<pontos[14][1])==False: 
+                print('Reiniciando leitura')
+                senha[0]=0
+                senha[1]=0
+                senha[2]=0
+                senha[3]=0
+                                     
             #print(('2 - '))
             #print(pontos[4][1])
             #print('4 - ')
             #print(pontos[2][1])
-            print('Contador geral',contadorGeral)
+            print('Contador geral',contadorGeralSenha)
             print('Contador atual',contador)
             cv2.rectangle(img,(80,10),(200,110),(255,0,0),-1)
             cv2.putText(img,str(contador),(100,100),cv2.FONT_HERSHEY_SIMPLEX,4,(255,255,255),5)
@@ -96,14 +123,14 @@ while True:
             cv2.putText(img,str(senha),(260,45),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,255),5)
             cv2.putText(img,str("Lendo senha..."),(300,75),cv2.FONT_HERSHEY_SIMPLEX,0.7,(255,255,255),5)
 
-            if senha == senhacorreta:
-                print("senha correta")
-                cv2.putText(img,str('Senha correta'),(50,270),cv2.FONT_HERSHEY_SIMPLEX,2,(0,255,255),5)
+            #if senha == senhacorreta:
+            #    print("senha correta")
+            #    cv2.putText(img,str('Senha correta'),(50,270),cv2.FONT_HERSHEY_SIMPLEX,2,(0,255,255),5)
             
-            return contador, contadorGeral, posicaoSenha
+            return contador, contadorGeralSenha, posicaoSenha, contadorGeral
 
     if handsPoints:    
-        ultimosNumeros = detectador(ultimosNumeros[0],ultimosNumeros[1],ultimosNumeros[2])
+        ultimosNumeros = detectador(ultimosNumeros[0],ultimosNumeros[1],ultimosNumeros[2],ultimosNumeros[3])
 
     cv2.imshow("Imagem", img)
     cv2.waitKey(100)
