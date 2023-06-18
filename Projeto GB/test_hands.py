@@ -1,7 +1,5 @@
 import cv2
 import mediapipe as mp
-import os
-import time
 
 video = cv2.VideoCapture(0)
 
@@ -53,6 +51,7 @@ while True:
                 analiseSentidoPontaBase1 = ((pontos[8][1]<pontos[8-3][1]) or (pontos[12][1]<pontos[12-3][1]) or (pontos[16][1]<pontos[16-3][1]) or (pontos[20][1]<pontos[20-3][1]))
                 analiseSentidoPontaBase2 = ((pontos[8][1]<pontos[8-1][1]) or (pontos[12][1]<pontos[12-1][1]) or (pontos[16][1]<pontos[16-1][1]) or (pontos[20][1]<pontos[20-1][1]))
                 maoAberta = analisePontaBase1 and analisePontaBase2 and analiseSentidoPontaBase1 and analiseSentidoPontaBase2
+                                                
                 for x in dedos:
                     if(maoAberta):# Mitigando erros quando a mão está fechada, reconhecendo apenas contagem quando algum dedo estiver aberto(exceto dedão)
                         
@@ -64,21 +63,43 @@ while True:
                         if(((pontos[4][0] - pontos[3][0])>9) and (trasdaMao) and dedao==0): # dedão com palma da mão para trás 
                             contador += 1
                             dedao=1
+              
+                     
+                        print("doze menos dezeseis:",str(pontos[12][0] - pontos[16][0]))
+                      
+                        pardeDedosJuntos = (pontos[8][0] - pontos[12][0]<33 and (pontos[16][0]- pontos[20][0])<33)
+                        pardeDedosSeparados = (pontos[12][0] - pontos[16][0]>60)
+                        Vulcano = (contador == 5 and pardeDedosJuntos and pardeDedosSeparados)
+                        print(pardeDedosJuntos)
+                        print(pardeDedosSeparados)
+
+
+                        if (Vulcano): # DETECTOU MÃO ABERTA E SINAL Vulcano 
+                            
+                            if senha == senhacorreta:
+                                 print("senha correta")
+                                 cv2.putText(img,str('Senha correta!!'),(40,270),cv2.FONT_HERSHEY_SIMPLEX,2,(0,255,255),5)
+                                 print("ACESSO LIBERADO")
+                                 cv2.putText(img,str('Vulcado Detectado!'),(39,320),cv2.FONT_HERSHEY_SIMPLEX,2,(80, 200, 120),5)
+                                 cv2.putText(img,str('Acesso Admin'),(40,370),cv2.FONT_HERSHEY_SIMPLEX,2,(80, 200, 120),5)
+                                 cv2.putText(img,str('concedido!!'),(40,420),cv2.FONT_HERSHEY_SIMPLEX,2,(80, 200, 120),5)
+                                 contadorGeralSenha=0
+
                     else:#Mao Fechada
                         contador=0                 
                         if (dedaoUp): # DETECTOU MÃO FECHADA E POLEGAR PARA CIMA = JOINHA
                             
                             if senha == senhacorreta:
                                  print("senha correta")
-                                 cv2.putText(img,str('Senha correta'),(50,270),cv2.FONT_HERSHEY_SIMPLEX,2,(0,255,255),5)
+                                 cv2.putText(img,str('Senha correta'),(45,270),cv2.FONT_HERSHEY_SIMPLEX,2,(0,255,255),5)
                                  print("ACESSO LIBERADO")
-                                 cv2.putText(img,str('ACESSO LIBERADO'),(50,320),cv2.FONT_HERSHEY_SIMPLEX,2,(80, 200, 120),5)
+                                 cv2.putText(img,str('ACESSO LIBERADO'),(45,320),cv2.FONT_HERSHEY_SIMPLEX,2,(80, 200, 120),5)
                                  contadorGeralSenha=0
                             else:  
                                 print("JOINHA DETECTADO")
-                                cv2.putText(img,str('Joinha detectado'),(50,270),cv2.FONT_HERSHEY_SIMPLEX,2,(124, 252, 0),5)
+                                cv2.putText(img,str('Joinha detectado'),(45,270),cv2.FONT_HERSHEY_SIMPLEX,2,(124, 252, 0),5)
                                 contadorGeralSenha=0   
-            
+            Vulcano = (contador == 5 )
             contadorGeral+=1
             if contador == ultimaLeitura:
                 contadorGeralSenha += 1        
@@ -105,7 +126,7 @@ while True:
                         contadorGeral=0
 
                     else:
-                        if contadorGeral>20 and (dedaoUp)==False:#senha correta seta contador geral para zero, será resetado ao chegar em 20
+                        if contadorGeral>25 and (dedaoUp)==False:#senha correta seta contador geral para zero, será resetado ao chegar em 20
                             contadorGeral=0
                           
                 contadorGeralSenha=0
@@ -113,12 +134,12 @@ while True:
             if contadorGeral<10 and senha==[0,0,0,0]: #Tempo de exibicao na tela
                 cv2.putText(img,str('Reiniciando leitura'),(50,470),cv2.FONT_HERSHEY_SIMPLEX,2,(0,255,255),5)
 
-            senhacorretaejoinhaoff = senha==[1,2,3,4] and (dedaoUp)==False      
+            senhacorretaejoinhaoff = senha==[1,2,3,4] and (dedaoUp)==False and Vulcano==False     
             
             if contadorGeral>18 and senhacorretaejoinhaoff: #Tempo para reset após senha correta
                 print('Reiniciando leitura')
                 cv2.putText(img,str('Reiniciando leitura'),(50,470),cv2.FONT_HERSHEY_SIMPLEX,2,(0,255,255),5)
-                if contadorGeral>25:
+                if contadorGeral>30:
                     posicaoSenha=0
                     senha[0]=0
                     senha[1]=0
