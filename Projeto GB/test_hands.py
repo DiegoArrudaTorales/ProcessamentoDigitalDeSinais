@@ -41,7 +41,7 @@ while True:
             
             if points: 
                 dedao=0 # usado para não gerar duplicidade na leitura do dedão
-                dedaoUp = (pontos[2][1] - pontos[4][1]>60) and (pontos[5][1]<pontos[17][1]) and (pontos[5][1]<pontos[14][1]) 
+                dedaoUp = (pontos[2][1] - pontos[4][1]>40) and (pontos[5][1]<pontos[17][1]) and (pontos[5][1]<pontos[14][1]) 
                 palmadaMao = pontos[8][0] < pontos[20][0]
                 trasdaMao = pontos[8][0] > pontos[20][0]
                 distanciapontabase1 = 17
@@ -68,12 +68,11 @@ while True:
                         print("doze menos dezeseis:",str(pontos[12][0] - pontos[16][0]))
                       
                         pardeDedosJuntos = (pontos[8][0] - pontos[12][0]<33 and (pontos[16][0]- pontos[20][0])<33)
-                        pardeDedosSeparados = (pontos[12][0] - pontos[16][0]>60)
+                        pardeDedosSeparados = (pontos[12][0] - pontos[16][0]>55)
                         Vulcano = (contador == 5 and pardeDedosJuntos and pardeDedosSeparados)
                         print(pardeDedosJuntos)
                         print(pardeDedosSeparados)
-
-
+                        
                         if (Vulcano): # DETECTOU MÃO ABERTA E SINAL Vulcano 
                             
                             if senha == senhacorreta:
@@ -84,7 +83,7 @@ while True:
                                  cv2.putText(img,str('Acesso Admin'),(40,370),cv2.FONT_HERSHEY_SIMPLEX,2,(80, 200, 120),5)
                                  cv2.putText(img,str('concedido!!'),(40,420),cv2.FONT_HERSHEY_SIMPLEX,2,(80, 200, 120),5)
                                  contadorGeralSenha=0
-
+                        
                     else:#Mao Fechada
                         contador=0                 
                         if (dedaoUp): # DETECTOU MÃO FECHADA E POLEGAR PARA CIMA = JOINHA
