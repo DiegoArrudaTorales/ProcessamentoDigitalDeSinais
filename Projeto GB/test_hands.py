@@ -41,7 +41,7 @@ while True:
             
             if points: 
                 dedao=0 # usado para não gerar duplicidade na leitura do dedão
-                dedaoUp = (pontos[2][1] - pontos[4][1]>40) and (pontos[5][1]<pontos[17][1]) and (pontos[5][1]<pontos[14][1]) 
+                dedaoUp = (pontos[2][1] - pontos[4][1]>35) and (pontos[5][1]<pontos[17][1]) and (pontos[5][1]<pontos[14][1]) 
                 palmadaMao = pontos[8][0] < pontos[20][0]
                 trasdaMao = pontos[8][0] > pontos[20][0]
                 distanciapontabase1 = 17
@@ -79,7 +79,7 @@ while True:
                                  print("senha correta")
                                  cv2.putText(img,str('Senha correta!!'),(40,270),cv2.FONT_HERSHEY_SIMPLEX,2,(0,255,255),5)
                                  print("ACESSO LIBERADO")
-                                 cv2.putText(img,str('Vulcado Detectado!'),(39,320),cv2.FONT_HERSHEY_SIMPLEX,2,(80, 200, 120),5)
+                                 cv2.putText(img,str('Vulcano Detectado!'),(39,320),cv2.FONT_HERSHEY_SIMPLEX,2,(80, 200, 120),5)
                                  cv2.putText(img,str('Acesso Admin'),(40,370),cv2.FONT_HERSHEY_SIMPLEX,2,(80, 200, 120),5)
                                  cv2.putText(img,str('concedido!!'),(40,420),cv2.FONT_HERSHEY_SIMPLEX,2,(80, 200, 120),5)
                                  contadorGeralSenha=0
